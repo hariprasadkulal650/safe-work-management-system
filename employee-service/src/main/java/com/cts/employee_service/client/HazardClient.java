@@ -9,12 +9,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-@FeignClient(name = "HAZARD-SERVICE") // Eureka mein jo naam hai wahi yahan aayega
+@FeignClient(name = "hazard-incident-service")
 public interface HazardClient {
 
-    @PostMapping("/hazards/report") // Hazard Service ka POST endpoint mapping
-    HazardDTO createHazard(@RequestBody HazardDTO hazardDTO);
+    @PostMapping("/hazard/postHazard/{employeeId}")
+    HazardDTO createHazard(@PathVariable("employeeId") Long employeeId, @RequestBody HazardDTO hazardDTO);
 
-    @GetMapping("/hazards/employee/{id}") // Hazard Service ka GET endpoint mapping
-    List<HazardDTO> getHazardsByEmployee(@PathVariable("id") long id);
+
+    @GetMapping("/hazard/employee/{employeeId}")
+    List<HazardDTO> getHazardsByEmployee(@PathVariable("employeeId") Long employeeId);
 }

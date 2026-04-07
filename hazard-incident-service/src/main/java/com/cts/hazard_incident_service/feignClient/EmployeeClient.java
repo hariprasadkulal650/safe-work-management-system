@@ -10,6 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 )
 public interface EmployeeClient {
 
-    @GetMapping("/getEmployeebyId/{employeeId}")
+    @GetMapping("/{employeeId}")
     void getEmployeeById(@PathVariable("employeeId") Long employeeId);
 }

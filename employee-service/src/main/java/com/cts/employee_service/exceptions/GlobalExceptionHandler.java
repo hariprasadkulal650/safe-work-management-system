@@ -31,7 +31,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
         Map<String, String> errorResponse = new HashMap<>();
 
-        // Agar error message mein "Duplicate entry" word hai, toh hum samajh jayenge email exists karta hai
         if (ex.getMessage() != null && ex.getMessage().contains("Duplicate entry")) {
             errorResponse.put("email", "This email is already registered. Please login or use another email.");
         } else {

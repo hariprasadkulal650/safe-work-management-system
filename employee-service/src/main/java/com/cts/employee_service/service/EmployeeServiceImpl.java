@@ -23,10 +23,10 @@ public class EmployeeServiceImpl implements IEmployeeService {
     private EmployeeRepository employeeRepository;
 
     @Autowired
-    private HazardClient hazardClient; // Naya Feign Client
+    private HazardClient hazardClient;
 
     @Autowired
-    private TrainingClient trainingClient; // Naya Feign Client
+    private TrainingClient trainingClient;
 
     private EmployeeResponseDTO mapToDTO(Employee emp) {
         EmployeeResponseDTO dto = new EmployeeResponseDTO();
@@ -76,7 +76,8 @@ public class EmployeeServiceImpl implements IEmployeeService {
         if(!employeeRepository.existsById(hazardDTO.getEmployeeId())) {
             throw new RuntimeException("Employee ID does not exist.");
         }
-        return hazardClient.createHazard(hazardDTO); // Hazard Service ko call gaya
+
+        return hazardClient.createHazard(hazardDTO.getEmployeeId(), hazardDTO);
     }
 
     @Override
