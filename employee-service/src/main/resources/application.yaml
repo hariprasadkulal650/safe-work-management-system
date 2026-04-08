@@ -1,9 +1,9 @@
 server:
-  port: 8082
+  port: 8081
 
 spring:
   application:
-    name: EMPLOYEE-SERVICE # Gateway isi naam ko dhoondega
+    name: EMPLOYEE-SERVICE
   datasource:
     url: jdbc:mysql://localhost:3306/employee_DB
     username: root
@@ -17,11 +17,11 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
 
-# Eureka settings (Standard Spring Boot structure)
+
 eureka:
   instance:
-    prefer-ip-address: true # DNS issue resolve karne ke liye
-    instance-id: ${spring.application.name}:${random.value}
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}:${random.value}
   client:
     register-with-eureka: true
     fetch-registry: true
