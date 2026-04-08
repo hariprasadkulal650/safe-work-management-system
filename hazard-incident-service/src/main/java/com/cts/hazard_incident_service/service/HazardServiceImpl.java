@@ -3,12 +3,14 @@ package com.cts.hazard_incident_service.service;
 import com.cts.hazard_incident_service.dto.HazardRequestDto;
 import com.cts.hazard_incident_service.entity.Hazard;
 import com.cts.hazard_incident_service.enums.HazardStatus;
+import com.cts.hazard_incident_service.enums.NotificationCategory;
 import com.cts.hazard_incident_service.exception.EmployeeNotFoundException;
 import com.cts.hazard_incident_service.exception.HazardNotFoundException;
 import com.cts.hazard_incident_service.exception.IncidentAlreadyReportedException;
 import com.cts.hazard_incident_service.exception.InvalidEmployeeException;
 import com.cts.hazard_incident_service.exception.ServiceUnavailableException;
 import com.cts.hazard_incident_service.feignClient.EmployeeClient;
+import com.cts.hazard_incident_service.feignClient.NotificationClient;
 import com.cts.hazard_incident_service.projection.HazardReportProjection;
 import com.cts.hazard_incident_service.repository.HazardRepository;
 
@@ -17,6 +19,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -27,16 +30,18 @@ import java.util.Map;
 @Slf4j
 public class HazardServiceImpl implements IHazardService {
 
+    private final NotificationClient  notificationClient;
     private final HazardRepository hazardRepository;
     private final EmployeeClient employeeClient;
 
     @Autowired
     public HazardServiceImpl(
             HazardRepository hazardRepository,
-            EmployeeClient employeeClient
+            EmployeeClient employeeClient, NotificationClient notificationClient
     ) {
         this.hazardRepository = hazardRepository;
         this.employeeClient = employeeClient;
+        this.notificationClient = notificationClient;
     }
 
     @Override
@@ -89,6 +94,14 @@ public class HazardServiceImpl implements IHazardService {
         hazard.setEmployeeId(employeeId);
 
         hazardRepository.save(hazard);
+
+        String message = "New hazard reported by employee with hazard id:" + employeeId;
+        notificationClient.createNotification(
+                employeeId,
+                hazard.getHazardId(),
+                message,
+                NotificationCategory.HAZARD
+        );
 
         log.info("Hazard created successfully for employeeId: {}", employeeId);
         return dto;

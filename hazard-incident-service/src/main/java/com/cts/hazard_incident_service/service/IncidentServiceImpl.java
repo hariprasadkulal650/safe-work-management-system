@@ -4,10 +4,12 @@ import com.cts.hazard_incident_service.dto.IncidentRequestDto;
 import com.cts.hazard_incident_service.entity.Hazard;
 import com.cts.hazard_incident_service.entity.Incident;
 import com.cts.hazard_incident_service.enums.HazardStatus;
+import com.cts.hazard_incident_service.enums.NotificationCategory;
 import com.cts.hazard_incident_service.exception.HazardNotFoundException;
 import com.cts.hazard_incident_service.exception.IncidentAlreadyReportedException;
 import com.cts.hazard_incident_service.exception.IncidentNotFoundException;
 import com.cts.hazard_incident_service.exception.ServiceUnavailableException;
+import com.cts.hazard_incident_service.feignClient.NotificationClient;
 import com.cts.hazard_incident_service.feignClient.UserClient;
 import com.cts.hazard_incident_service.projection.IncidentReportProjection;
 import com.cts.hazard_incident_service.repository.HazardRepository;
@@ -28,15 +30,17 @@ public class IncidentServiceImpl implements IIncidentService {
     private final IncidentRepository incidentRepository;
     private final HazardRepository hazardRepository;
     private final UserClient userClient;
+    private final NotificationClient notificationClient;
 
     public IncidentServiceImpl(
             IncidentRepository incidentRepository,
             HazardRepository hazardRepository,
-            UserClient userClient
+            UserClient userClient, NotificationClient notificationClient
     ) {
         this.incidentRepository = incidentRepository;
         this.hazardRepository = hazardRepository;
         this.userClient = userClient;
+        this.notificationClient = notificationClient;
     }
 
     @Override
@@ -84,6 +88,14 @@ public class IncidentServiceImpl implements IIncidentService {
 
         incidentRepository.save(incident);
         hazardRepository.save(hazard);
+
+        String message = "Incident reported for hazard with id: " + hazardId;
+        notificationClient.createNotification(
+                hazardId,
+                incident.getIncidentId(),
+                message,
+                NotificationCategory.INCIDENT
+        );
 
         return dto;
     }

@@ -9,6 +9,7 @@ import lombok.Data;
 public class HazardRequestDto {
 
 
+
     @NotBlank(message = "Hazard description must not be empty")
     @Size(min = 5, max = 255, message = "Hazard description must be between 5 and 255 characters")
     private String hazardDescription;
