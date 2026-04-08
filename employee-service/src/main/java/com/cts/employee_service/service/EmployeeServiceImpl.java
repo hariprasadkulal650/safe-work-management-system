@@ -1,12 +1,10 @@
+
+
+
 package com.cts.employee_service.service;
 
-import com.cts.employee_service.client.HazardClient;
-import com.cts.employee_service.client.TrainingClient;
 import com.cts.employee_service.dto.EmployeeResponseDTO;
-import com.cts.employee_service.dto.HazardDTO;
-import com.cts.employee_service.dto.TrainingDTO;
-import com.cts.employee_service.entities.Employee;
-import com.cts.employee_service.entities.EmployeeDocument;
+import com.cts.employee_service.entities.*;
 import com.cts.employee_service.enums.EmployeeStatus;
 import com.cts.employee_service.repositories.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,36 +19,6 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     @Autowired
     private EmployeeRepository employeeRepository;
-
-    @Autowired
-    private HazardClient hazardClient; // Naya Feign Client
-
-    @Autowired
-    private TrainingClient trainingClient; // Naya Feign Client
-
-    private EmployeeResponseDTO mapToDTO(Employee emp) {
-        EmployeeResponseDTO dto = new EmployeeResponseDTO();
-        dto.setEmployeeId(emp.getEmployeeId());
-        dto.setEmployeeName(emp.getEmployeeName());
-        dto.setEmail(emp.getEmail());
-        dto.setEmployeeDepartmentName(emp.getEmployeeDepartmentName());
-        dto.setEmployeeStatus(emp.getEmployeeStatus().toString());
-        return dto;
-    }
-
-    @Override
-    public List<EmployeeResponseDTO> getAllEmployees() {
-        return employeeRepository.findAll().stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public EmployeeResponseDTO getEmployeeById(long id) {
-        Employee emp = employeeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + id));
-        return mapToDTO(emp);
-    }
 
     @Override
     public Employee registerEmployee(Employee employee) {
@@ -69,30 +37,28 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 .orElseThrow(() -> new RuntimeException("Invalid Email or Password"));
     }
 
-    // --- External Service Calls via Feign ---
-
     @Override
-    public HazardDTO reportHazard(HazardDTO hazardDTO) {
-        if(!employeeRepository.existsById(hazardDTO.getEmployeeId())) {
-            throw new RuntimeException("Employee ID does not exist.");
-        }
-        return hazardClient.createHazard(hazardDTO); // Hazard Service ko call gaya
+    public List<EmployeeResponseDTO> getAllEmployees() {
+        return employeeRepository.findAll().stream()
+                .map(emp -> new EmployeeResponseDTO(
+                        emp.getEmployeeId(),
+                        emp.getEmployeeName(),
+                        emp.getEmail(),
+                        emp.getEmployeeDepartmentName(),
+                        emp.getEmployeeStatus().toString()))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<HazardDTO> getHazardsByEmployee(long employeeId) {
-        if (!employeeRepository.existsById(employeeId)) {
-            throw new RuntimeException("Employee not found.");
-        }
-        return hazardClient.getHazardsByEmployee(employeeId);
-    }
-
-    @Override
-    public List<TrainingDTO> getTrainingsByEmployee(long employeeId) {
-        if (!employeeRepository.existsById(employeeId)) {
-            throw new RuntimeException("Employee not found.");
-        }
-        return trainingClient.getTrainingsByEmployee(employeeId);
+    public EmployeeResponseDTO getEmployeeById(long id) {
+        Employee emp = employeeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + id));
+        return new EmployeeResponseDTO(
+                emp.getEmployeeId(),
+                emp.getEmployeeName(),
+                emp.getEmail(),
+                emp.getEmployeeDepartmentName(),
+                emp.getEmployeeStatus().toString());
     }
 
     @Override

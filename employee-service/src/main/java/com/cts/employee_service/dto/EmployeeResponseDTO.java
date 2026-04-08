@@ -1,8 +1,12 @@
 package com.cts.employee_service.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class EmployeeResponseDTO {
     private long employeeId;
     private String employeeName;

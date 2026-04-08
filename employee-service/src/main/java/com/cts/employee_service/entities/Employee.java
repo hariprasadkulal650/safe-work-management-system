@@ -8,7 +8,7 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "employees") // Professional standard: Plural table name
+@Table(name = "employees")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

@@ -13,5 +13,5 @@ public class TrainingDTO {
     private String trainingName;
     private String status;         // e.g., COMPLETED, IN_PROGRESS
     private LocalDate completionDate;
-    private Long employeeId;       // Link karne ke liye
+    private Long employeeId;
 }
