@@ -1,6 +1,3 @@
-
-
-
 package com.cts.employee_service.controller;
 
 import com.cts.employee_service.dto.*;
@@ -10,6 +7,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,7 +26,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Employee> login(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<String> login(@Valid @RequestBody LoginRequest loginRequest) {
         return ResponseEntity.ok(employeeService.loginEmployee(loginRequest.getEmail(), loginRequest.getPassword()));
     }
 
@@ -44,5 +43,10 @@ public class EmployeeController {
     @GetMapping("/{id}/document")
     public ResponseEntity<EmployeeDocument> getDocument(@PathVariable long id) {
         return ResponseEntity.ok(employeeService.getEmployeeDocument(id));
+    }
+
+    @GetMapping("/getByEmail/{email}")
+    public ResponseEntity<Employee> getEmployeeByEmail(@PathVariable String email) {
+        return ResponseEntity.ok(employeeService.getEmployeeByEmail(email));
     }
 }

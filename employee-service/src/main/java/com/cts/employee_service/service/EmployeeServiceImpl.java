@@ -3,7 +3,9 @@
 
 package com.cts.employee_service.service;
 
+import com.cts.employee_service.client.SecurityClient;
 import com.cts.employee_service.dto.EmployeeResponseDTO;
+import com.cts.employee_service.dto.LoginRequest;
 import com.cts.employee_service.entities.*;
 import com.cts.employee_service.enums.EmployeeStatus;
 import com.cts.employee_service.repositories.EmployeeRepository;
@@ -20,6 +22,9 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Autowired
     private EmployeeRepository employeeRepository;
 
+    @Autowired
+    private SecurityClient securityClient;
+
     @Override
     public Employee registerEmployee(Employee employee) {
         if (employee.getDocument() != null) {
@@ -31,10 +36,14 @@ public class EmployeeServiceImpl implements IEmployeeService {
     }
 
     @Override
-    public Employee loginEmployee(String email, String password) {
-        return employeeRepository.findByEmail(email)
-                .filter(emp -> emp.getPassword().equals(password))
-                .orElseThrow(() -> new RuntimeException("Invalid Email or Password"));
+    public String loginEmployee(String email, String password) {
+        // Build login request DTO
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setEmail(email);
+        loginRequest.setPassword(password);
+
+        // Delegate authentication to security-service
+        return securityClient.login(loginRequest);
     }
 
     @Override
@@ -67,4 +76,15 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 .orElseThrow(() -> new RuntimeException("Employee not found."));
         return employee.getDocument();
     }
+
+    @Override
+    public Employee getEmployeeByEmail(String email) {
+        return employeeRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Employee with email " + email + " not found."));
+    }
+
+
+
+
+
 }

@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: EMPLOYEE-SERVICE
+    name: employee-service
   datasource:
     url: jdbc:mysql://localhost:3306/employee_DB
     username: root
@@ -11,11 +11,15 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
+
+
+jwt:
+  secret: mySuperSecretKey12345678901234567890   # must be at least 32 chars
 
 
 eureka:
